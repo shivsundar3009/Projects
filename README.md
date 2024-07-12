@@ -1,1 +1,1 @@
-# MERN-Projects
+# Projects
