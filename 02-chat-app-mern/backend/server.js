@@ -6,6 +6,8 @@ dotenv.config() //  default config  file
 
 const app = express()
 
+app.use(express.json()) // middleware to parse json data
+
 const port = process.env.PORT || 3000
 
 app.listen(port, () => (
