@@ -19,3 +19,5 @@ app.get("/", (req,res) => (
     res.send("hello shiv")
 ))
 
+import userRoutes from "./routes/user.routes.js"
+app.use("/api",userRoutes) // routes               
