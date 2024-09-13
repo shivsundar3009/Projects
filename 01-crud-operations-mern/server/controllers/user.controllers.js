@@ -64,3 +64,21 @@ export const updateUser = async (req,res) => {
 
 
 // delete user
+
+export const deleteUser = async (req,res) => {
+
+    try {
+        
+        const {id} = req.params
+
+        await User.findByIdAndDelete(id)
+
+        res.json({message: "User deleted"})
+        
+    } catch (error) {
+
+        console.error(error)
+        res.status(500).json({message: "Server Error"})
+        
+    }
+}
