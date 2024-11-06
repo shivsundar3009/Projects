@@ -61,6 +61,42 @@ export const loginUser = async (req, res) => {
 
 }
 
+export const getOtherUsers = async (req , res ) => {
+
+       try {
+
+        const loggedInUsedID = req._id
+
+       const otherUsers = await User.find({_id : {$ne:loggedInUsedID}})
+       
+       console.log(otherUsers);
+
+    res.json(otherUsers)
+
+        
+       } catch (error) {
+        
+       }
+
+
+}
+
 export const logoutUser = async (req, res) => {
+
+    try {
+
+        res.status(200).cookie("token","",{maxAge:0}).json({
+            message:"successfully logged out",
+            success:true
+        })
+        
+    } catch (error) {
+
+        res.status(400).json({
+            message:"user logout Failed",
+            success:false
+        })
+        
+    }
 
 }

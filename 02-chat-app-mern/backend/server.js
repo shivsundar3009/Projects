@@ -1,4 +1,5 @@
 import express from "express"
+import cookieParser from "cookie-parser"
 
 const app = express()
 
@@ -6,6 +7,8 @@ import connectDB from "./db/db.js"
 connectDB()
 
 app.use(express.json())
+app.use(cookieParser())
+
 
 app.listen(5000, () => {
     console.log(`server is running at port 5000`)

@@ -25,15 +25,10 @@ const userSchema = new mongoose.Schema({
         type:Number,
         required:true,
     }, 
-    gender:{
-        type:String,
-        enum:['male' , 'female'],
-        required:true
-    },
     profilePic:{
         type:String,
         required:true,
-    }   
+    }
 },{
     timestamps:true
 })
