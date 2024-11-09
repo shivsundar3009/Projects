@@ -23,3 +23,6 @@ app.use("/api/userRoutes",userRoutes)
 
 import authRoutes from "./routes/auth.routes.js"
 app.use("/api/authRoutes",authRoutes)
+
+import conversationRoutes from "./routes/conversation.routes.js"
+app.use("/api/conversation", conversationRoutes)
