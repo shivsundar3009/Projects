@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Search , ArrowBigRight } from 'lucide-react';
+import { Search, ArrowBigRight, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ChatHome = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
-  const profile = `https://unsplash.com/photos/a-man-standing-next-to-a-brown-horse-c_hMKkyVIo8`
+  const profile = `https://unsplash.com/photos/a-man-standing-next-to-a-brown-horse-c_hMKkyVIo8`;
   
   // Mock logged-in user
   const currentUser = {
@@ -15,7 +19,6 @@ const ChatHome = () => {
     status: "online"
   };
 
-  // Mock users data
   const users = [
     { id: 2, name: "Alice Smith", lastMessage: "Hey, how are you?", time: "12:30 PM", unread: 2, avatar: "https://images.unsplash.com/photo-1721332150382-d4114ee27eff?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", status: "online" },
     { id: 3, name: "Bob Johnson", lastMessage: "See you tomorrow!", time: "11:45 AM", unread: 0, avatar: "https://images.unsplash.com/photo-1730973915515-e79273d90b7c?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", status: "offline" },
@@ -23,7 +26,6 @@ const ChatHome = () => {
     { id: 5, name: "Michael Wilson", lastMessage: "The meeting is at 3 PM", time: "Yesterday", unread: 0, avatar: "https://plus.unsplash.com/premium_photo-1676517029946-324a31862744?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", status: "offline" },
   ];
 
-  // Mock chat messages
   const mockMessages = [
     { id: 1, senderId: 1, text: "Hi there!", timestamp: "12:01 PM" },
     { id: 2, senderId: 2, text: "Hello! How are you?", timestamp: "12:02 PM" },
@@ -32,17 +34,26 @@ const ChatHome = () => {
     { id: 5, senderId: 1, text: "That's awesome! What kind of projects?", timestamp: "12:05 PM" },
   ];
 
-  // Filter users based on search query
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/authRoutes/logoutUser'); 
+      toast.success("Logged out successfully");
+      navigate('/login');
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
   return (
     <div className="flex h-screen bg-base-200">
       {/* Left Panel - Users List */}
-      <div className="w-1/3 border-r border-base-300 bg-base-100 flex flex-col ">
-        {/* Header with user profile */}
-        <div className="p-4 border-b border-base-300 bg-green-200">
+      <div className="w-1/3 border-r border-base-300 bg-base-100 flex flex-col">
+        {/* Header with user profile and logout button */}
+        <div className="p-4 border-b border-base-300 bg-green-200 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="avatar online">
               <div className="w-10 rounded-full">
@@ -51,28 +62,28 @@ const ChatHome = () => {
             </div>
             <h2 className="font-semibold">{currentUser.name}</h2>
           </div>
+          <button className="btn btn-outline" onClick={handleLogout}>
+            <LogOut className="mr-2" /> Logout
+          </button>
         </div>
 
         {/* Search Bar */}
-        
-
-<div className="p-4 border-b border-base-300">
-  <div className="form-control">
-    <div className="flex items-center gap-2">
-      <input
-        type="text"
-        placeholder="Search chats..."
-        className="input input-bordered flex-grow"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <button className="btn btn-square flex items-center justify-center">
-        <Search className="h-5 w-5" />
-      </button>
-    </div>
-  </div>
-</div>
-
+        <div className="p-4 border-b border-base-300">
+          <div className="form-control">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search chats..."
+                className="input input-bordered flex-grow"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className="btn btn-square flex items-center justify-center">
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Users List */}
         <div className="overflow-y-auto flex-1">
@@ -107,9 +118,8 @@ const ChatHome = () => {
       {/* Right Panel - Chat or Welcome Screen */}
       <div className="flex-1 flex flex-col bg-base-100">
         {selectedChat ? (
-          // Chat View
           <>
-            {/* Chat Header */}
+            {/* Chat View */}
             <div className="p-4 border-b border-base-300 flex items-center gap-4">
               <div className={`avatar ${selectedChat.status === 'online' ? 'online' : 'offline'}`}>
                 <div className="w-10 rounded-full">
@@ -124,7 +134,6 @@ const ChatHome = () => {
               </div>
             </div>
 
-            {/* Chat Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-base-200">
               {mockMessages.map(message => (
                 <div
@@ -138,40 +147,18 @@ const ChatHome = () => {
                   }`}>
                     {message.text}
                   </div>
-                  <div className="chat-footer opacity-50 text-xs">
+                  <div className="chat-footer text-xs text-base-content/70 mt-1">
                     {message.timestamp}
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-base-300">
-              <div className="input-group flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Type a message..."
-                  className="input input-bordered w-full"
-                />
-                <button className="btn btn-primary">
-                <ArrowBigRight />
-
-                </button>
-              </div>
-            </div>
           </>
         ) : (
-          // Welcome Screen
-          <div className="flex-1 flex flex-col items-center justify-center p-8 bg-base-200">
-            <div className="avatar">
-              <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                <img src={currentUser.avatar} alt={currentUser.name} />
-              </div>
-            </div>
-            <h1 className="text-3xl font-bold mt-4 mb-2">Welcome, {currentUser.name}!</h1>
-            <p className="text-base-content/70 text-center max-w-md">
-              Select a chat from the left panel to start messaging. Stay connected with your friends and family!
-            </p>
+          /* Welcome Screen */
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <h1 className="text-2xl font-bold mb-2">Welcome, {currentUser.name}!</h1>
+            <p className="text-sm text-base-content/70">Select a chat to start messaging.</p>
           </div>
         )}
       </div>
