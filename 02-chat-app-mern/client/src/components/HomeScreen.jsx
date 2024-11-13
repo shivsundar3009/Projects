@@ -3,11 +3,27 @@ import { Search, ArrowBigRight, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
+import { useEffect } from 'react';
 
 const ChatHome = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const { showSuccess, showError } = useToast();
+
+  const [hasShownSuccess, setHasShownSuccess] = useState(false);
+
+  useEffect(() => {
+    // Show success toast only if it hasn't been shown yet
+    if (location.state?.success && !hasShownSuccess) {
+      showSuccess("Logged In Successfully");
+      setHasShownSuccess(true); // Mark the success toast as shown
+    }
+  }, [location.state?.success, hasShownSuccess, showSuccess]);
 
   const profile = `https://unsplash.com/photos/a-man-standing-next-to-a-brown-horse-c_hMKkyVIo8`;
   

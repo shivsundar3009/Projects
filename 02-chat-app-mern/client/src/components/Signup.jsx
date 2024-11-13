@@ -3,10 +3,15 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { User, Mail, Phone, Lock, Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 function Signup() {
+
   const navigate = useNavigate();
+
+  const { showError } = useToast();
+
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
@@ -28,11 +33,11 @@ function Signup() {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/api/userRoutes/createUser', formData);
-      toast.success('User registered successfully!');
       setFormData({ userName: '', email: '', number: '', password: '', gender: '', age: '' });
-      navigate('/login'); // Redirect to login page
+      navigate('/login', { state: { success: true } });
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error registering user');
+      showError( error.response?.data?.message)
+      // toast.error(error.response?.data?.message || 'Error registering user');
       console.error('Error registering user:', error.response?.data?.message);
     }
   };
@@ -164,7 +169,7 @@ function Signup() {
           {/* Optional: Link to Login */}
           <div className="text-center mt-4">
             <p className="text-gray-600">
-              Already have an account? <a href="/login" className="text-[#128C7E] font-bold hover:underline">Login</a>
+              Already have an account? <Link to="/" className="text-[#128C7E] font-bold hover:underline">Login</Link>
             </p>
           </div>
         </form>

@@ -1,67 +1,77 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
-import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import { useToast } from '../context/ToastContext';
+import { useEffect } from 'react';
+import { useNavigate  , useLocation} from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
-function Login() {
+function Login() {  
+
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { showSuccess, showError } = useToast();
+
+  const [hasShownSuccess, setHasShownSuccess] = useState(false);
+
+  useEffect(() => {
+    // Show success toast only if it hasn't been shown yet
+    if (location.state?.success && !hasShownSuccess) {
+      showSuccess("Successfully Registered! Please log in.");
+      setHasShownSuccess(true); // Mark the success toast as shown
+    }
+  }, [location.state?.success, hasShownSuccess, showSuccess]);
+
   const [formData, setFormData] = useState({
-    email: "",
-    password:""
-  })
+    identifier: "",
+    password: ""
+  });
 
   const handleChange = (e) => {
-    
-    const {name , value} = e.target
+    const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value  // Directly assign value, without square brackets
+      [name]: value
     }));
-
-    console.log(formData);
-
-  } 
+  };
 
   const handleSubmit = async (e) => {
-
-    e.preventDefault()
-
-    console.log("hi1111");
+    e.preventDefault();
 
     try {
-
-      const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser',formData)
-
-      console.log(response);
-
-      console.log('hiiii');
-      
+      const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser', formData);
+      // navigate('/homeScreen' ,{ state : { success : true} });
+      navigate("/homeScreen"),
+      toast.success("happy G")
     } catch (error) {
-
-       console.log("error in login",error);
-      
+      showError(error.response?.data?.message)
     }
+  };
 
-  }
   return (
     <div
       style={{ backgroundColor: '#EDEDED' }} // Solid color background
       className="h-screen flex items-center justify-center"
     >
+      <ToastContainer />
       <div className="bg-[#f0f2f5] bg-opacity-95 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Log In</h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Email */}
+          {/* Username/Email */}
           <div className="flex items-center border-b border-gray-300 pb-2">
             <Mail className="text-[#128C7E] mr-3" />
             <input
-              type="email"
-              id="email"
-              name="email"
+              type="text"
+              id="identifier"
+              name="identifier"
               className="w-full px-3 py-2 bg-transparent focus:outline-none"
-              placeholder="Email"
-              onChange={handleChange }
+              placeholder="Username or Email"
+              onChange={handleChange}
               required
             />
           </div>
@@ -93,7 +103,12 @@ function Login() {
 
         {/* Optional: Link to Signup */}
         <div className="text-center mt-4">
-          <p className="text-gray-600">Don't have an account? <a href="/signup" className="text-[#128C7E] font-bold hover:underline">Sign Up</a></p>
+          <p className="text-gray-600">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-[#128C7E] font-bold hover:underline">
+              Sign Up
+            </Link>
+          </p>
         </div>
       </div>
     </div>
