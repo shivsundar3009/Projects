@@ -25,6 +25,8 @@ const ChatHome = () => {
     }
   }, [location.state?.success, hasShownSuccess, showSuccess]);
 
+  
+
   const profile = `https://unsplash.com/photos/a-man-standing-next-to-a-brown-horse-c_hMKkyVIo8`;
   
   // Mock logged-in user
@@ -34,6 +36,9 @@ const ChatHome = () => {
     avatar: `https://plus.unsplash.com/premium_photo-1727894728393-3869871407a4?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`,
     status: "online"
   };
+  
+
+
 
   const users = [
     { id: 2, name: "Alice Smith", lastMessage: "Hey, how are you?", time: "12:30 PM", unread: 2, avatar: "https://images.unsplash.com/photo-1721332150382-d4114ee27eff?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", status: "online" },
@@ -58,11 +63,14 @@ const ChatHome = () => {
     try {
       await axios.post('http://localhost:5000/api/authRoutes/logoutUser'); 
       toast.success("Logged out successfully");
+
+      // console.log();
       navigate('/login');
     } catch (error) {
       toast.error("Logout failed");
     }
   };
+
 
   return (
     <div className="flex h-screen bg-base-200">
