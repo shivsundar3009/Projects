@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { User, Mail, Phone, Lock, Calendar } from 'lucide-react';
-import { useNavigate , Link } from 'react-router-dom';
-import { useToast } from '../context/ToastContext';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Signup() {
-
   const navigate = useNavigate();
-
-  const { showError } = useToast();
 
   const [formData, setFormData] = useState({
     userName: '',
@@ -18,33 +12,30 @@ function Signup() {
     number: '',
     password: '',
     gender: '',
-    age: ''
+    age: '',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/userRoutes/createUser', formData);
+      await axios.post('http://localhost:5000/api/userRoutes/createUser', formData);
       setFormData({ userName: '', email: '', number: '', password: '', gender: '', age: '' });
       navigate('/login', { state: { success: true } });
     } catch (error) {
-      showError( error.response?.data?.message)
-      // toast.error(error.response?.data?.message || 'Error registering user');
       console.error('Error registering user:', error.response?.data?.message);
     }
   };
 
   return (
     <div style={{ backgroundColor: '#EDEDED' }} className="h-screen flex items-center justify-center">
-      <ToastContainer />
       <div className="bg-[#f0f2f5] bg-opacity-95 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Sign Up</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -169,7 +160,10 @@ function Signup() {
           {/* Optional: Link to Login */}
           <div className="text-center mt-4">
             <p className="text-gray-600">
-              Already have an account? <Link to="/" className="text-[#128C7E] font-bold hover:underline">Login</Link>
+              Already have an account?{' '}
+              <Link to="/" className="text-[#128C7E] font-bold hover:underline">
+                Login
+              </Link>
             </p>
           </div>
         </form>

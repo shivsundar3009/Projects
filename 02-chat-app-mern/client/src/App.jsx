@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ToastProvider } from './context/ToastContext';  // Import ToastProvider
 import HomeScreen from './components/HomeScreen';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -10,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';  // Toast styles
 
 function App() {
   return (
-    <ToastProvider>  {/* Wrap the entire app with ToastProvider */}
       <Router>
         <Routes>
           <Route path="/homeScreen" element={<HomeScreen />} />
@@ -22,7 +20,6 @@ function App() {
         {/* ToastContainer will handle displaying toasts */}
         <ToastContainer />
       </Router>
-    </ToastProvider>
   );
 }
 

@@ -1,33 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock } from 'lucide-react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { useToast } from '../context/ToastContext';
-import { useEffect } from 'react';
-import { useNavigate  , useLocation} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { login } from '../redux/features/User/UserSlice';
+import { useDispatch } from 'react-redux';
 
-function Login() {  
 
-
+function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { showSuccess, showError } = useToast();
 
-  const [hasShownSuccess, setHasShownSuccess] = useState(false);
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    // Show success toast only if it hasn't been shown yet
-    if (location.state?.success && !hasShownSuccess) {
-      showSuccess("Successfully Registered! Please log in.");
-      setHasShownSuccess(true); // Mark the success toast as shown
-    }
-  }, [location.state?.success, hasShownSuccess, showSuccess]);
+
 
   const [formData, setFormData] = useState({
     identifier: "",
-    password: ""
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -35,7 +24,7 @@ function Login() {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -44,11 +33,15 @@ function Login() {
 
     try {
       const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser', formData);
-      // navigate('/homeScreen' ,{ state : { success : true} });
-      navigate("/homeScreen"),
-      toast.success("happy G")
+
+      console.log(response.data.user);
+
+      dispatch(login(response.data.user))
+      navigate("/homeScreen");
+
+      console.log("Login successful");
     } catch (error) {
-      showError(error.response?.data?.message)
+      console.error(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -57,7 +50,6 @@ function Login() {
       style={{ backgroundColor: '#EDEDED' }} // Solid color background
       className="h-screen flex items-center justify-center"
     >
-      <ToastContainer />
       <div className="bg-[#f0f2f5] bg-opacity-95 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Log In</h2>
 

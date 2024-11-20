@@ -1,44 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ArrowBigRight, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { useLocation } from 'react-router-dom';
-import { useToast } from '../context/ToastContext';
-import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
-const ChatHome = () => {
+const HomeScreen = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  const location = useLocation();
-  const { showSuccess, showError } = useToast();
+  const loggedInUser = useSelector((state) => state?.User?.loggedInUser);
 
-  const [hasShownSuccess, setHasShownSuccess] = useState(false);
-
-  useEffect(() => {
-    // Show success toast only if it hasn't been shown yet
-    if (location.state?.success && !hasShownSuccess) {
-      showSuccess("Logged In Successfully");
-      setHasShownSuccess(true); // Mark the success toast as shown
-    }
-  }, [location.state?.success, hasShownSuccess, showSuccess]);
-
-  
+  console.log(loggedInUser);
 
   const profile = `https://unsplash.com/photos/a-man-standing-next-to-a-brown-horse-c_hMKkyVIo8`;
-  
+
   // Mock logged-in user
   const currentUser = {
     id: 1,
     name: "J Doe",
     avatar: `https://plus.unsplash.com/premium_photo-1727894728393-3869871407a4?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`,
-    status: "online"
+    status: "online",
   };
-  
-
-
 
   const users = [
     { id: 2, name: "Alice Smith", lastMessage: "Hey, how are you?", time: "12:30 PM", unread: 2, avatar: "https://images.unsplash.com/photo-1721332150382-d4114ee27eff?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", status: "online" },
@@ -55,22 +37,18 @@ const ChatHome = () => {
     { id: 5, senderId: 1, text: "That's awesome! What kind of projects?", timestamp: "12:05 PM" },
   ];
 
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:5000/api/authRoutes/logoutUser'); 
-      toast.success("Logged out successfully");
-
-      // console.log();
+      await axios.post('http://localhost:5000/api/authRoutes/logoutUser');
       navigate('/login');
     } catch (error) {
-      toast.error("Logout failed");
+      console.error("Logout failed");
     }
   };
-
 
   return (
     <div className="flex h-screen bg-base-200">
@@ -111,7 +89,7 @@ const ChatHome = () => {
 
         {/* Users List */}
         <div className="overflow-y-auto flex-1">
-          {filteredUsers.map(user => (
+          {filteredUsers.map((user) => (
             <div
               key={user.id}
               onClick={() => setSelectedChat(user)}
@@ -159,16 +137,18 @@ const ChatHome = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-base-200">
-              {mockMessages.map(message => (
+              {mockMessages.map((message) => (
                 <div
                   key={message.id}
                   className={`chat ${
                     message.senderId === currentUser.id ? 'chat-end' : 'chat-start'
                   }`}
                 >
-                  <div className={`chat-bubble ${
-                    message.senderId === currentUser.id ? 'chat-bubble-primary' : ''
-                  }`}>
+                  <div
+                    className={`chat-bubble ${
+                      message.senderId === currentUser.id ? 'chat-bubble-primary' : ''
+                    }`}
+                  >
                     {message.text}
                   </div>
                   <div className="chat-footer text-xs text-base-content/70 mt-1">
@@ -182,7 +162,9 @@ const ChatHome = () => {
           /* Welcome Screen */
           <div className="flex flex-col items-center justify-center h-full text-center">
             <h1 className="text-2xl font-bold mb-2">Welcome, {currentUser.name}!</h1>
-            <p className="text-sm text-base-content/70">Select a chat to start messaging.</p>
+            <p className="text-sm text-base-content/70">
+              Select a chat to start a conversation
+            </p>
           </div>
         )}
       </div>
@@ -190,4 +172,4 @@ const ChatHome = () => {
   );
 };
 
-export default ChatHome;
+export default HomeScreen;
