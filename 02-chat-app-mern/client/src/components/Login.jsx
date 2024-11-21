@@ -34,7 +34,7 @@ function Login() {
     try {
       const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser', formData);
 
-      console.log(response.data.user);
+      console.log(response.data);
 
       dispatch(login(response.data.user))
       navigate("/homeScreen");

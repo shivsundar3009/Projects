@@ -51,6 +51,7 @@ export const loginUser = async (req, res) => {
           message: "User logged in successfully",
           user,
           success: true,
+          token
         });
   
     } catch (error) {
@@ -68,7 +69,7 @@ export const getOtherUsers = async (req , res ) => {
 
         const loggedInUsedID = req._id
 
-       const otherUsers = await User.find({_id : {$ne:loggedInUsedID}})
+       const otherUsers = await User.find({_id : {$ne:loggedInUsedID}}).select("-password")
        
        console.log(otherUsers);
 
@@ -76,6 +77,12 @@ export const getOtherUsers = async (req , res ) => {
 
         
        } catch (error) {
+
+        res.status(500).json({
+          message: "Internal server error",
+          success: false,
+          error
+      });
         
        }
 
