@@ -1,40 +1,30 @@
-import { useEffect , useState } from 'react'
-import axios from 'axios'
-function GetOtherUsers() {
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-
-  const [otherUsers, setOtherUsers] = useState(null)
+function useGetOtherUsers(isLoggedIn) {
+  const [otherUsers, setOtherUsers] = useState(null);
 
   useEffect(() => {
+    if (isLoggedIn) {
+      async function getUsers() {
+        try {
+          const Users = await axios.post(
+            `http://localhost:5000/api/authRoutes/getOtherUsers`,
+            {},
+            { withCredentials: true }
+          );
 
-     async function getUsers(){
+          setOtherUsers(Users?.data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
 
+      getUsers();
+    }
+  }, [isLoggedIn]); // Add isLoggedIn to the dependency array
 
-         try {
-    
-           const otherUsers = await axios.post(`http://localhost:5000/api/authRoutes/getOtherUsers`,
-                {withCredentials:true}
-           )
-    
-           setOtherUsers(otherUsers?.data || null)
-           
-         } catch (error) {
-    
-           console.log(error);
-           
-         }
-
-
-     }
-
-     getUsers()
-
-
-
-  }, [])
-
-
-  return otherUsers
+  return otherUsers;
 }
 
-export default GetOtherUsers
+export default useGetOtherUsers;

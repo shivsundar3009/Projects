@@ -9,11 +9,24 @@ import GetOtherUsers from '../customHooks/GetOtherUsers';
 
 const HomeScreen = () => {
 
+  const [isLoggedIn, setIsLoggedIn] = useState("false")
+
+  console.log(isLoggedIn);
+
+  
   const selectedChatUser = useSelector((state)=> state.user?.selectedChatUser)
-
+  
   const currentUser = useSelector((state) => state.User?.loggedInUser);
+  
+  const otherUsers = GetOtherUsers(isLoggedIn)
 
-  const otherUsers = GetOtherUsers()
+  useEffect(() => {
+    if (currentUser) {
+      setIsLoggedIn(true);
+    }
+  }, [currentUser]);
+
+  console.log(!!currentUser);
 
   console.log(otherUsers);
   
@@ -42,7 +55,7 @@ const HomeScreen = () => {
 
         {/* userList */}
 
-        {/* <UsersList/> */}
+        <UsersList/>
 
         
       </div>

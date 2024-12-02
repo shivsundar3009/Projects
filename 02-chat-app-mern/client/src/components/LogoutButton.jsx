@@ -12,10 +12,12 @@ const LogoutButton = () => {
   const handleLogout = async () => {
     try {
       // Call API for logout
-      const res = await axios.post("http://localhost:5000/api/authRoutes/logoutUser");
+      const res = await axios.post("http://localhost:5000/api/authRoutes/logoutUser",{},{
+        withCredentials:true
+      });
 
       console.log(res);
-
+      
       // Dispatch Redux action to clear user state
       dispatch(logout());
 

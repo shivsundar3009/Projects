@@ -32,7 +32,9 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser', formData);
+      const response = await axios.post('http://localhost:5000/api/authRoutes/loginUser', formData , {
+        withCredentials:true
+      });
 
       console.log(response.data);
 
