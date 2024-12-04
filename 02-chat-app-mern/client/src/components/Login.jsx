@@ -36,7 +36,7 @@ function Login() {
         withCredentials:true
       });
 
-      console.log(response.data);
+      // console.log(response.data);
 
       dispatch(login(response.data.user))
       navigate("/homeScreen");

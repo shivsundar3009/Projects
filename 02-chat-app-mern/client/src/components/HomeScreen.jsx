@@ -5,33 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import LogoutButton from './LogoutButton';
 import ChatBox from './ChatBox';
 import UsersList from './UsersList';
-import GetOtherUsers from '../customHooks/GetOtherUsers';
 
 const HomeScreen = () => {
-
-  const [isLoggedIn, setIsLoggedIn] = useState("false")
-
-  console.log(isLoggedIn);
-
   
   const selectedChatUser = useSelector((state)=> state.user?.selectedChatUser)
   
   const currentUser = useSelector((state) => state.User?.loggedInUser);
-  
-  const otherUsers = GetOtherUsers(isLoggedIn)
-
-  useEffect(() => {
-    if (currentUser) {
-      setIsLoggedIn(true);
-    }
-  }, [currentUser]);
-
-  console.log(!!currentUser);
-
-  console.log(otherUsers);
-  
-  // console.log();
-  console.log(currentUser);
 
   return (
     <div className="flex h-screen bg-base-200">

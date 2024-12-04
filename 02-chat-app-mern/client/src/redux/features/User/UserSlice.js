@@ -12,6 +12,8 @@ export const UserSlice = createSlice({
       },
       logout: (state) => {
         state.loggedInUser = null;
+        state.otherUsers = null;
+        state.selectedChatUser = null
       },
       setOtherUsers: (state , action) => {
         state.otherUsers = action.payload;

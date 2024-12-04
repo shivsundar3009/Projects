@@ -1,12 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import GetOtherUsers from "../customHooks/GetOtherUsers";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setOtherUsers, setSelectedChatUser } from "../redux/features/User/UserSlice";
 
 function UsersList() {
-  const otherUsers = GetOtherUsers(); // Fetch users using custom hook
+  const [otherUsers, setLocalOtherUsers] = useState(null); // State to store users locally
   const [searchValue, setSearchValue] = useState(""); // State for search input
   const [filteredUsers, setFilteredUsers] = useState([]); // State for filtered users
   const [selectedChat, setSelectedChat] = useState(null); // State for selected chat
+
+  const dispatch = useDispatch();
+
+  const handleClickOnUser = (user) => {
+
+    setSelectedChat(user)
+
+    dispatch(setSelectedChatUser(user))
+
+
+  }
+   
+  // console.log(selectedChat);
+  // Fetch other users on component mount
+  useEffect(() => {
+    const fetchOtherUsers = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/authRoutes/getOtherUsers",
+          {},
+          { withCredentials: true }
+        );
+        console.log(response.data);
+
+        const users = response.data; // Get users from the response
+        setLocalOtherUsers(users); // Update local state
+        dispatch(setOtherUsers(users)); // Update Redux store
+        setFilteredUsers(users); // Initialize filtered users
+      } catch (error) {
+        console.error("Error fetching users:", error.response?.data || error.message);
+      }
+    };
+
+    fetchOtherUsers();
+  }, [dispatch]);
 
   // Filter users based on search input
   useEffect(() => {
@@ -18,7 +55,7 @@ function UsersList() {
     }
   }, [searchValue, otherUsers]);
 
-  if (!otherUsers) {
+  if (!filteredUsers) {
     return <p>Loading users...</p>;
   }
 
@@ -47,31 +84,29 @@ function UsersList() {
         {filteredUsers.map((user) => (
           <div
             key={user._id}
-            onClick={() => setSelectedChat(user)}
+            onClick={() => handleClickOnUser(user)}
             className={`flex items-center gap-4 p-4 hover:bg-base-200 cursor-pointer border-b border-base-200 ${
               selectedChat?._id === user._id ? "bg-base-200" : ""
             }`}
           >
-            <div
-              className={`avatar ${
-                user.status === "online" ? "online" : "offline"
-              }`}
-            >
+            {/* User Avatar */}
+            <div className="avatar">
               <div className="w-12 rounded-full">
                 <img src={user.profilePic} alt={user.userName} />
               </div>
             </div>
+
+            {/* User Details */}
             <div className="flex-1">
               <h3 className="font-medium">{user.userName}</h3>
               <p className="text-sm text-base-content/70">
-                {user.lastMessage || "No messages yet"}
+                {user.email || "No email provided"}
               </p>
             </div>
+
+            {/* User Additional Info */}
             <div className="text-xs text-base-content/70">
-              <p>{user.time || "Just now"}</p>
-              {user.unread && user.unread > 0 && (
-                <div className="badge badge-primary badge-sm">{user.unread}</div>
-              )}
+              <p>{`Age: ${user.age || "N/A"}`}</p>
             </div>
           </div>
         ))}
