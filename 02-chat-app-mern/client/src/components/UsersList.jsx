@@ -31,7 +31,7 @@ function UsersList() {
           {},
           { withCredentials: true }
         );
-        console.log(response.data);
+        // console.log(response.data);
 
         const users = response.data; // Get users from the response
         setLocalOtherUsers(users); // Update local state

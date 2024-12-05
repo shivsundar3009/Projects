@@ -17,7 +17,7 @@ export const sendMessage = async (req,res ) => {
 
        console.log(conversation);
 
-       if(conversation.length == 0) {
+       if(!conversation) {
            
          conversation = await Conversation.create({
             participants: [sendersID,recieversID]

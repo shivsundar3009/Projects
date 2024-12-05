@@ -8,8 +8,6 @@ import UsersList from './UsersList';
 
 const HomeScreen = () => {
   
-  const selectedChatUser = useSelector((state)=> state.user?.selectedChatUser)
-  
   const currentUser = useSelector((state) => state.User?.loggedInUser);
 
   return (
@@ -41,32 +39,7 @@ const HomeScreen = () => {
 
       {/* Right Panel - Chat or Welcome Screen */}
       <div className="flex-1 flex flex-col bg-base-100">
-        {selectedChatUser ? (
-          <>
-            {/* Chat View */}
-           <ChatBox/>
-          </>
-        ) : (
-          /* Welcome Screen */
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            {/* Profile Image */}
-            <img 
-              src={currentUser.profilePic} 
-              alt={`${currentUser.userName}'s profile`} 
-              className="w-32 h-32 rounded-full mb-4 object-cover shadow-lg" 
-            />
-        
-            {/* Welcome Message */}
-            <h1 className="text-2xl font-bold mb-2">
-              Welcome, {currentUser.userName}!
-            </h1>
-            
-            <p className="text-sm text-base-content/70">
-              Select a chat to start a conversation
-            </p>
-          </div>
-        )
-        }
+         < ChatBox />
       </div>
     </div>
   );

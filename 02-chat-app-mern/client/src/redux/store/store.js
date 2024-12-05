@@ -17,6 +17,7 @@ import storage from "redux-persist/lib/storage"
 const persistConfig = {
     key: 'User',
      storage,
+     blacklist: ["selectedChatUser"],
 }
 
 const persistedReducer = persistReducer(persistConfig , UserSlice)
