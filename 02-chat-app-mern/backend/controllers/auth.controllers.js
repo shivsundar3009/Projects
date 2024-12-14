@@ -71,7 +71,7 @@ export const getOtherUsers = async (req , res ) => {
 
        const otherUsers = await User.find({_id : {$ne:loggedInUsedID}}).select("-password")
        
-       console.log(otherUsers);
+      //  console.log(otherUsers);
 
     res.json(otherUsers)
 

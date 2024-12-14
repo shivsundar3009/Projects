@@ -5,9 +5,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { logout } from "../redux/features/User/UserSlice"; // Adjust the path based on your file structure
 
+import { useSocket } from "../context/SocketContext";
+
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { socket } = useSocket(); // Access the socket context
 
   const handleLogout = async () => {
     try {
@@ -20,6 +24,12 @@ const LogoutButton = () => {
       
       // Dispatch Redux action to clear user state
       dispatch(logout());
+
+      // Close the socket connection
+
+      socket.disconnect(); // Close the socket connection
+
+
 
       // Navigate to login page
       navigate("/");

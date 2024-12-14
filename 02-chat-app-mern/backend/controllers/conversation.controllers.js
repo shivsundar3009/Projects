@@ -1,63 +1,80 @@
 import {Message} from "../models/message.model.js"
 import {Conversation} from "../models/conversation.model.js"
+import { getSocketId } from "../socket/socket.js";
+import {io} from "../socket/socket.js";
 
-export const sendMessage = async (req,res ) => {
+export const sendMessage = async (req, res) => {
+  try {
+    // Extract sender, receiver IDs and the message from the request
+    const sendersID = req._id;
+    const recieversID = req.params._id;
+    const { message } = req.body;
 
-   try {
+    console.log(sendersID, recieversID, message);
 
-       const sendersID = req._id
+    // Find existing conversation between the sender and receiver
+    let conversation = await Conversation.findOne({
+      participants: { $all: [sendersID, recieversID] },
+    });
 
-       const recieversID = req.params._id
+    console.log(conversation);
 
-       const { message } = req.body
+    // If no conversation exists, create a new one
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [sendersID, recieversID],
+      });
+    }
 
-       console.log(sendersID , recieversID , message);
+    // Create a new message and associate it with the sender and receiver
+    const newMessage = await Message.create({
+      sendersID,
+      recieversID,
+      message,
+    });
 
-       let conversation = await Conversation.findOne({participants : {$all : [sendersID,recieversID]}})
+    console.log("New message created with ID:", newMessage._id);
 
-       console.log(conversation);
+    // Add the new message to the conversation
+    conversation.messages.push(newMessage._id);
+    await conversation.save();
 
-       if(!conversation) {
-           
-         conversation = await Conversation.create({
-            participants: [sendersID,recieversID]
-         })
-       }
+    const recieverSocketId = getSocketId(recieversID);
 
-       const newMessage = await Message.create({
-         sendersID,
-         recieversID,
-         message
-       })
+    const sendersSocketId = getSocketId(sendersID);
 
-      //  await newMessage.save()
+    console.log('recieverSOCKETIDD',recieverSocketId);
 
-       console.log(newMessage._id);
-       
-       if(newMessage) {
+    if(!recieverSocketId && sendersSocketId) {
 
-         await conversation.messages.push(newMessage._id)
-            
-       }
+      io.to(sendersSocketId).emit('newMessage',newMessage)
+    }
 
-       await conversation.save()
+    if (recieverSocketId && sendersSocketId){
+      console.log(`send message to ${recieverSocketId}`);
+      // Emit a "newMessage" event to the receiver's socket
+      io.to(recieverSocketId).emit('newMessage',newMessage);
 
-       return res.status(200).json({
-         message: "successfull",
-         conversation,
-         message
-       })
-   } catch (error) {
+      io.to(sendersSocketId).emit('newMessage', newMessage); 
+    }
 
-      return res.status(400).json({
-         message: "error",
-         success : "false",
-         error:error.message
-      })
-    
-   }
+    // Send a success response with the conversation and message details
+    return res.status(200).json({
+      message: "Message sent successfully",
+      conversation,
+      newMessage, // Send the new message as part of the response
+    });
+  } catch (error) {
+    console.error("Error sending message:", error.message);
 
-}
+    return res.status(400).json({
+      message: "Error sending message",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 
 export const getMessages = async (req , res) =>  {
 
